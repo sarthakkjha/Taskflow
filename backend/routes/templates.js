@@ -1,139 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
 const { authenticate } = require('../middleware/auth');
+const templateController = require('../controllers/templateController');
 
 // Get all templates for current user
-router.get('/', authenticate, async (req, res) => {
-    try {
-        const { category } = req.query;
-        const query = { user_id: req.userId };
-
-        if (category) {
-            query.category = category;
-        }
-
-        const templates = await req.db.collection('templates')
-            .find(query, { projection: { _id: 0 } })
-            .sort({ updated_at: -1 })
-            .limit(1000)
-            .toArray();
-
-        res.json(templates);
-    } catch (error) {
-        console.error('Get templates error:', error);
-        res.status(500).json({ detail: error.message });
-    }
-});
+router.get('/', authenticate, templateController.getTemplates);
 
 // Get a single template
-router.get('/:templateId', authenticate, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-
-        const template = await req.db.collection('templates').findOne(
-            { template_id: templateId, user_id: req.userId },
-            { projection: { _id: 0 } }
-        );
-
-        if (!template) {
-            return res.status(404).json({ detail: 'Template not found' });
-        }
-
-        res.json(template);
-    } catch (error) {
-        console.error('Get template error:', error);
-        res.status(500).json({ detail: error.message });
-    }
-});
+router.get('/:templateId', authenticate, templateController.getTemplate);
 
 // Create a new template
-router.post('/', authenticate, async (req, res) => {
-    try {
-        const { category, template_type, title, content } = req.body;
-
-        if (!category || !template_type || !title || !content) {
-            return res.status(400).json({
-                detail: 'Category, template_type, title, and content are required'
-            });
-        }
-
-        const now = new Date().toISOString();
-        const template = {
-            template_id: `template_${uuidv4().replace(/-/g, '').slice(0, 12)}`,
-            user_id: req.userId,
-            category,
-            template_type,
-            title,
-            content,
-            created_at: now,
-            updated_at: now
-        };
-
-        await req.db.collection('templates').insertOne(template);
-
-        const { _id, ...templateWithoutId } = template;
-        res.status(201).json(templateWithoutId);
-    } catch (error) {
-        console.error('Create template error:', error);
-        res.status(500).json({ detail: error.message });
-    }
-});
+router.post('/', authenticate, templateController.createTemplate);
 
 // Update a template
-router.put('/:templateId', authenticate, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-
-        const existingTemplate = await req.db.collection('templates').findOne(
-            { template_id: templateId, user_id: req.userId }
-        );
-
-        if (!existingTemplate) {
-            return res.status(404).json({ detail: 'Template not found' });
-        }
-
-        const { title, content } = req.body;
-        const updateData = { updated_at: new Date().toISOString() };
-
-        if (title !== undefined) updateData.title = title;
-        if (content !== undefined) updateData.content = content;
-
-        await req.db.collection('templates').updateOne(
-            { template_id: templateId, user_id: req.userId },
-            { $set: updateData }
-        );
-
-        const updatedTemplate = await req.db.collection('templates').findOne(
-            { template_id: templateId },
-            { projection: { _id: 0 } }
-        );
-
-        res.json(updatedTemplate);
-    } catch (error) {
-        console.error('Update template error:', error);
-        res.status(500).json({ detail: error.message });
-    }
-});
+router.put('/:templateId', authenticate, templateController.updateTemplate);
 
 // Delete a template
-router.delete('/:templateId', authenticate, async (req, res) => {
-    try {
-        const { templateId } = req.params;
-
-        const result = await req.db.collection('templates').deleteOne(
-            { template_id: templateId, user_id: req.userId }
-        );
-
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ detail: 'Template not found' });
-        }
-
-        res.json({ message: 'Template deleted successfully' });
-    } catch (error) {
-        console.error('Delete template error:', error);
-        res.status(500).json({ detail: error.message });
-    }
-});
+router.delete('/:templateId', authenticate, templateController.deleteTemplate);
 
 module.exports = router;
