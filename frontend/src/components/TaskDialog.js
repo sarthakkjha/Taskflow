@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 export default function TaskDialog({ open, onClose, onSuccess, task }) {
   const [formData, setFormData] = useState({
@@ -57,7 +57,7 @@ export default function TaskDialog({ open, onClose, onSuccess, task }) {
       const url = task
         ? `${BACKEND_URL}/api/tasks/${task.task_id}`
         : `${BACKEND_URL}/api/tasks`;
-      
+
       const method = task ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

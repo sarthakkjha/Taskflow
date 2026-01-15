@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { useState } from 'react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 export default function Layout({ children }) {
   const location = useLocation();
@@ -70,11 +70,10 @@ export default function Layout({ children }) {
                 key={item.path}
                 to={item.path}
                 data-testid={`nav-${item.label.toLowerCase()}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
                     ? 'bg-white/10 text-foreground'
                     : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
-                }`}
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
@@ -106,9 +105,8 @@ export default function Layout({ children }) {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`md:hidden fixed top-16 left-0 bottom-0 w-64 bg-card border-r border-white/5 z-40 transition-transform duration-300 ${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`md:hidden fixed top-16 left-0 bottom-0 w-64 bg-card border-r border-white/5 z-40 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <nav className="p-4 space-y-2">
           {navItems.map((item) => {
@@ -120,11 +118,10 @@ export default function Layout({ children }) {
                 to={item.path}
                 onClick={closeMobileMenu}
                 data-testid={`mobile-nav-${item.label.toLowerCase()}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
                     ? 'bg-white/10 text-foreground'
                     : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
-                }`}
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>

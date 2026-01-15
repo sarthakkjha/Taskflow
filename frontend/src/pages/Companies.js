@@ -11,7 +11,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { filterJobsByStatus, getStatusCounts } from '../utils/jobStatus';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 export default function Companies() {
   const [jobs, setJobs] = useState([]);
@@ -40,7 +40,7 @@ export default function Companies() {
       if (response.ok) {
         const data = await response.json();
         setJobs(data);
-        
+
         // Check if reminder should be re-shown (when new not-applied jobs are added)
         const notAppliedCount = data.filter(j => j.applied === 'no').length;
         const storedCount = localStorage.getItem('last_not_applied_count');
@@ -70,7 +70,7 @@ export default function Companies() {
 
   const handleDelete = async (jobId) => {
     if (!window.confirm('Delete this job application?')) return;
-    
+
     try {
       const response = await fetch(`${BACKEND_URL}/api/jobs/${jobId}`, {
         method: 'DELETE',
@@ -107,23 +107,23 @@ export default function Companies() {
     try {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.width;
-      
+
       doc.setFontSize(20);
       doc.setFont(undefined, 'bold');
       doc.text('Job Applications Tracker', pageWidth / 2, 20, { align: 'center' });
-      
+
       doc.setFontSize(10);
       doc.setFont(undefined, 'normal');
       doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 28, { align: 'center' });
-      
+
       const grouped = groupByCompany(filteredJobs);
       const totalCompanies = Object.keys(grouped).length;
       const totalApplications = filteredJobs.length;
       const appliedCount = filteredJobs.filter(j => j.applied === 'yes').length;
-      
+
       doc.setFontSize(11);
       doc.text(`Total Companies: ${totalCompanies} | Total Applications: ${totalApplications} | Applied: ${appliedCount}`, pageWidth / 2, 36, { align: 'center' });
-      
+
       const tableData = filteredJobs.map(job => [
         job.company,
         job.role,
@@ -135,13 +135,13 @@ export default function Companies() {
         job.interviews === 'done' ? 'Done' : job.interviews === 'in_process' ? 'In Progress' : 'Waiting',
         job.selected === 'offer' ? 'Offer' : job.selected === 'no' ? 'No' : 'Waiting'
       ]);
-      
+
       autoTable(doc, {
         startY: 45,
         head: [['Company', 'Role', 'Date', 'Applied', 'Opening', 'Referral', 'Shortlisted', 'Interviews', 'Selected']],
         body: tableData,
         theme: 'grid',
-        styles: { 
+        styles: {
           fontSize: 8,
           cellPadding: 2
         },
@@ -165,7 +165,7 @@ export default function Companies() {
           8: { cellWidth: 18 }
         }
       });
-      
+
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -178,7 +178,7 @@ export default function Companies() {
           { align: 'center' }
         );
       }
-      
+
       doc.save(`job-applications-${new Date().toISOString().split('T')[0]}.pdf`);
       toast.success('PDF exported successfully!');
     } catch (error) {
@@ -338,7 +338,7 @@ export default function Companies() {
         {filteredJobs.length === 0 ? (
           <div className="p-12 text-center rounded-lg border border-dashed border-white/10">
             <p className="text-muted-foreground">
-              {statusFilter === 'all' 
+              {statusFilter === 'all'
                 ? 'No job applications yet. Add your first one!'
                 : `No applications with "${filters.find(f => f.value === statusFilter)?.label}" status.`
               }

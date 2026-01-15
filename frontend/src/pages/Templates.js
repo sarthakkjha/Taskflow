@@ -6,7 +6,7 @@ import TemplateDialog from '../components/TemplateDialog';
 import TemplateTypeSelector from '../components/TemplateTypeSelector';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 const templateTypes = {
   cold_message: [
@@ -63,7 +63,7 @@ export default function Templates() {
 
   const handleDelete = async (templateId, templateTitle) => {
     if (!window.confirm(`Delete "${templateTitle}"?\n\nThis action cannot be undone.`)) return;
-    
+
     setDeletingId(templateId);
     try {
       const response = await fetch(`${BACKEND_URL}/api/templates/${templateId}`, {
@@ -109,17 +109,15 @@ export default function Templates() {
     const Icon = typeInfo?.icon || MessageSquare;
     const isDeleting = deletingId === template.template_id;
     const isColdMessage = template.category === 'cold_message';
-    
+
     return (
       <div
         key={template.template_id}
-        className={`group p-4 rounded-lg bg-card border transition-all space-y-3 ${
-          isDeleting ? 'opacity-50 pointer-events-none' : ''
-        } ${
-          isColdMessage 
-            ? 'border-white/5 hover:border-info/30' 
+        className={`group p-4 rounded-lg bg-card border transition-all space-y-3 ${isDeleting ? 'opacity-50 pointer-events-none' : ''
+          } ${isColdMessage
+            ? 'border-white/5 hover:border-info/30'
             : 'border-white/5 hover:border-taskManager/30'
-        }`}
+          }`}
         data-testid={`template-${template.template_id}`}
       >
         <div className="flex items-start justify-between gap-2">
@@ -223,7 +221,7 @@ export default function Templates() {
               )}
             </div>
           </div>
-          
+
           {coldMessageTemplates.length === 0 ? (
             <div className="p-8 text-center rounded-lg border border-dashed border-white/10 bg-card/30">
               <MessageSquare className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-50" />
@@ -257,7 +255,7 @@ export default function Templates() {
               )}
             </div>
           </div>
-          
+
           {applicationContentTemplates.length === 0 ? (
             <div className="p-8 text-center rounded-lg border border-dashed border-white/10 bg-card/30">
               <FileText className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-50" />

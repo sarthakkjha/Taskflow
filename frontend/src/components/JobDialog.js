@@ -8,7 +8,7 @@ import { Loader2, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 export default function JobDialog({ open, onClose, onSuccess, job }) {
   const [formData, setFormData] = useState({
@@ -131,7 +131,7 @@ export default function JobDialog({ open, onClose, onSuccess, job }) {
       const url = job
         ? `${BACKEND_URL}/api/jobs/${job.job_id}`
         : `${BACKEND_URL}/api/jobs`;
-      
+
       const method = job ? 'PUT' : 'POST';
 
       const payload = {

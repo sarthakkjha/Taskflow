@@ -7,7 +7,7 @@ import TaskCard from '../components/TaskCard';
 import { toast } from 'sonner';
 import { format, isToday, isTomorrow, isFuture, isPast } from 'date-fns';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -41,7 +41,7 @@ export default function Tasks() {
 
   const handleDelete = async (taskId) => {
     if (!window.confirm('Delete this task?')) return;
-    
+
     try {
       const response = await fetch(`${BACKEND_URL}/api/tasks/${taskId}`, {
         method: 'DELETE',

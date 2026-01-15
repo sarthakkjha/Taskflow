@@ -6,7 +6,7 @@ import TaskDialog from '../components/TaskDialog';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -133,11 +133,10 @@ export default function Dashboard() {
                       <div className="text-xs sm:text-sm text-muted-foreground mt-1 break-words">{task.description}</div>
                     )}
                     <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        task.priority === 'high' ? 'bg-destructive/20 text-destructive' :
-                        task.priority === 'medium' ? 'bg-warning/20 text-warning' :
-                        'bg-info/20 text-info'
-                      }`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${task.priority === 'high' ? 'bg-destructive/20 text-destructive' :
+                          task.priority === 'medium' ? 'bg-warning/20 text-warning' :
+                            'bg-info/20 text-info'
+                        }`}>
                         {task.priority}
                       </span>
                       {task.tags.map(tag => (

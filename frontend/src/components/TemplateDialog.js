@@ -6,7 +6,7 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
 const typeLabels = {
   linkedin_referral: 'LinkedIn Referral Request',
@@ -56,7 +56,7 @@ export default function TemplateDialog({ open, onClose, onSuccess, template, tem
       const url = template
         ? `${BACKEND_URL}/api/templates/${template.template_id}`
         : `${BACKEND_URL}/api/templates`;
-      
+
       const method = template ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
