@@ -14,7 +14,7 @@ export default defineConfig({
         open: true,
     },
     build: {
-        outDir: 'build',
+        outDir: 'dist',
     },
     // Ensure env vars starting with REACT_APP_ are exposed
     envPrefix: 'REACT_APP_',
