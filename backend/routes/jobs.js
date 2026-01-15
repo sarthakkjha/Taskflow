@@ -2,15 +2,29 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const { authenticate } = require('../middleware/auth');
+const { setCache, getCache, deleteCache } = require('../services/redis');
 
 // Get all job applications for current user
 router.get('/', authenticate, async (req, res) => {
     try {
+        const cacheKey = `jobs:${req.userId}`;
+
+        // Try to get from cache first
+        const cachedJobs = await getCache(cacheKey);
+        if (cachedJobs) {
+            console.log(`Cache hit for jobs:${req.userId}`);
+            return res.json(cachedJobs);
+        }
+
         const jobs = await req.db.collection('job_applications')
             .find({ user_id: req.userId }, { projection: { _id: 0 } })
             .sort({ created_at: -1 })
             .limit(1000)
             .toArray();
+
+        // Cache for 5 minutes (300 seconds)
+        await setCache(cacheKey, jobs, 300);
+        console.log(`Cache miss for jobs:${req.userId} - fetched from DB and cached`);
 
         res.json(jobs);
     } catch (error) {
@@ -58,6 +72,9 @@ router.post('/', authenticate, async (req, res) => {
         };
 
         await req.db.collection('job_applications').insertOne(job);
+
+        // Invalidate cache
+        await deleteCache(`jobs:${req.userId}`);
 
         const { _id, ...jobWithoutId } = job;
         res.status(201).json(jobWithoutId);
@@ -113,6 +130,8 @@ router.put('/:jobId', authenticate, async (req, res) => {
                 { job_id: jobId, user_id: req.userId },
                 { $set: updateData }
             );
+            // Invalidate cache
+            await deleteCache(`jobs:${req.userId}`);
         }
 
         const updatedJob = await req.db.collection('job_applications').findOne(
@@ -146,6 +165,9 @@ router.post('/update-logo/:jobId', authenticate, async (req, res) => {
             { $set: { company_logo: logo_url, company_domain: domain } }
         );
 
+        // Invalidate cache
+        await deleteCache(`jobs:${req.userId}`);
+
         res.json({ message: 'Logo updated successfully' });
     } catch (error) {
         console.error('Update job logo error:', error);
@@ -165,6 +187,9 @@ router.delete('/:jobId', authenticate, async (req, res) => {
         if (result.deletedCount === 0) {
             return res.status(404).json({ detail: 'Job application not found' });
         }
+
+        // Invalidate cache
+        await deleteCache(`jobs:${req.userId}`);
 
         res.json({ message: 'Job application deleted successfully' });
     } catch (error) {
