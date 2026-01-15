@@ -1,0 +1,21 @@
+{
+  "short_name": "TaskFlow",
+  "name": "TaskFlow - Task & Job Application Tracker",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "favicon.ico",
+      "type": "image/x-icon",
+      "sizes": "32x32"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#09090b",
+  "background_color": "#09090b",
+  "description": "Master your tasks and track your job applications in one beautiful, focused interface"
+}

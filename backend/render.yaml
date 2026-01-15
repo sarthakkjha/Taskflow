@@ -1,0 +1,29 @@
+# Render Blueprint for TaskFlow Backend
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: taskflow-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8001
+      - key: MONGO_URL
+        sync: false  # Set manually in Render dashboard
+      - key: DB_NAME
+        value: taskflow
+      - key: JWT_SECRET
+        generateValue: true  # Auto-generate secure secret
+      - key: CORS_ORIGINS
+        sync: false  # Set to your Vercel frontend URL
+      - key: REDIS_URL
+        sync: false  # Optional - set if using Redis add-on
+      - key: RABBITMQ_URL
+        sync: false  # Optional - set if using RabbitMQ add-on

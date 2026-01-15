@@ -1,0 +1,172 @@
+{
+  "design_system": {
+    "identity": {
+      "name": "E1 - The Anti-AI Designer",
+      "tone": "Focus, Clarity, Motivation, 'In the Zone'",
+      "archetype": "Swiss & High-Contrast (Dark Mode Variant)",
+      "principles": [
+        "Fusion over Imitation: Mix Productivity (Linear) with Data Art (D3)",
+        "Emotion First: Every interaction feels 'snappy' and 'precise'",
+        "Content is King: Data density without clutter",
+        "Negative Space: Use margins to group logic, not just borders",
+        "Contrast: High contrast text, subtle borders"
+      ]
+    },
+    "typography": {
+      "font_family": {
+        "headings": "Manrope, sans-serif",
+        "body": "Inter, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "scale": {
+        "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+        "h2": "text-3xl font-semibold tracking-tight",
+        "h3": "text-2xl font-medium",
+        "body": "text-base leading-relaxed",
+        "small": "text-sm text-muted-foreground",
+        "tiny": "text-xs font-mono uppercase tracking-wider"
+      }
+    },
+    "colors": {
+      "palette": {
+        "background": "#09090b",
+        "foreground": "#f4f4f5",
+        "card": "#121214",
+        "card_foreground": "#f4f4f5",
+        "popover": "#09090b",
+        "popover_foreground": "#f4f4f5",
+        "primary": "#f4f4f5",
+        "primary_foreground": "#09090b",
+        "secondary": "#27272a",
+        "secondary_foreground": "#f4f4f5",
+        "muted": "#27272a",
+        "muted_foreground": "#a1a1aa",
+        "accent": "#27272a",
+        "accent_foreground": "#f4f4f5",
+        "destructive": "#ef4444",
+        "destructive_foreground": "#f4f4f5",
+        "border": "#27272a",
+        "input": "#27272a",
+        "ring": "#f4f4f5"
+      },
+      "functional": {
+        "success": "#22c55e",
+        "warning": "#eab308",
+        "info": "#3b82f6",
+        "job_tracker": "#a855f7",
+        "task_manager": "#22c55e"
+      }
+    },
+    "spacing": {
+      "container_padding": "p-6 md:p-12",
+      "section_gap": "gap-8 md:gap-12",
+      "item_gap": "gap-3",
+      "radius": {
+        "default": "0.5rem",
+        "card": "0.75rem",
+        "button": "0.375rem"
+      }
+    },
+    "visual_enhancers": {
+      "glassmorphism": "bg-black/40 backdrop-blur-xl border-b border-white/10",
+      "tracing_beam": "relative after:absolute after:inset-0 after:rounded-lg after:ring-1 after:ring-white/20 hover:after:ring-white/40 transition-all",
+      "subtle_border": "border border-white/5",
+      "shadows": {
+        "card": "shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_2px_4px_rgba(0,0,0,0.2)]",
+        "glow": "shadow-[0_0_20px_-5px_rgba(168,85,247,0.3)]"
+      }
+    },
+    "layout_strategies": {
+      "dashboard": "Bento Grid (Mode B: Control Room)",
+      "tasks_page": "List View with Date Grouping Headers",
+      "companies_page": "Toggle: Kanban Board (Card View) / Data Table (Table View)",
+      "landing_page": "Minimalist Hero with 'Tetris' Grid features"
+    },
+    "motion": {
+      "transitions": "transition-all duration-200 ease-out",
+      "hover_lift": "hover:-translate-y-0.5 hover:shadow-lg",
+      "page_transition": "initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}"
+    }
+  },
+  "components": {
+    "ui_library": "shadcn/ui",
+    "icons": "lucide-react",
+    "custom_components": [
+      {
+        "name": "TaskCard",
+        "description": "Minimalist row item with checkbox, title, tags, and priority indicator. Hover reveals actions.",
+        "path": "src/components/custom/TaskCard.js"
+      },
+      {
+        "name": "JobCard",
+        "description": "Kanban-style card for job applications. Shows company logo (placeholder), role, date, and status badge.",
+        "path": "src/components/custom/JobCard.js"
+      },
+      {
+        "name": "StatusBadge",
+        "description": "Pill-shaped badge with dot indicator. Color-coded based on status (Applied, Interview, Offer, Rejected).",
+        "path": "src/components/custom/StatusBadge.js"
+      },
+      {
+        "name": "ViewToggle",
+        "description": "Segmented control to switch between Board and Table views.",
+        "path": "src/components/custom/ViewToggle.js"
+      },
+      {
+        "name": "CommandMenu",
+        "description": "Global command palette (Cmd+K) to add tasks or jobs quickly.",
+        "path": "src/components/custom/CommandMenu.js"
+      }
+    ]
+  },
+  "pages": {
+    "Landing": {
+      "structure": "Hero Section (Value Prop) -> Feature Grid (Bento) -> CTA",
+      "vibe": "Clean, mysterious, inviting. Use 'Tracing Beam' on feature cards."
+    },
+    "Dashboard": {
+      "structure": "Greeting -> Stats Row (Tasks Done, Applications Active) -> Today's Tasks (List) -> Recent Activity",
+      "vibe": "Control Room. Dense but legible."
+    },
+    "Tasks": {
+      "structure": "Filters/Search -> Task List (Grouped by Today, Tomorrow, Upcoming)",
+      "vibe": "Focus Mode. Minimal distractions."
+    },
+    "Companies": {
+      "structure": "Header (Stats + Add Button + View Toggle) -> Kanban Board OR Data Table",
+      "vibe": "Strategic. High-level overview."
+    }
+  },
+  "assets": {
+    "image_urls": [],
+    "instructions": "Use Lucide React icons for all visual metaphors. No external images required unless user uploads company logos."
+  },
+  "instructions_to_main_agent": {
+    "general": "Implement the 'Linear' aesthetic: Dark mode, subtle borders, high contrast text. Do not use gradients for backgrounds, only for subtle glows.",
+    "tailwind_setup": "Update tailwind.config.js to include the custom colors and animations defined in this JSON.",
+    "routing": "Ensure protected routes for Dashboard, Tasks, and Companies. Public route for Landing.",
+    "state_management": "Use React Context or a simple state manager for Task/Job data if backend is not ready, but structure it for API integration.",
+    "interactions": "All cards must have hover states (border color change or subtle lift). Buttons must have active states."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
