@@ -2,11 +2,11 @@
 
 Tracking job applications is a mess. Spreadsheets are boring, and existing tools are too complex.
 
-I built **TaskFlow** to organize the chaos of the job hunt. It helps you track applications, manage to-do lists, and get reminders—all in one place.
+I built **TaskFlow** to organize the chaos of the job hunt. It helps you track applications, manage to-do lists, and get reminders, all in one place.
 
 ## Why I Built This
 
-I needed a way to visualize my application progress without drowning in tabs. I also wanted to learn how to build a robust full-stack system that handles real-world scenarios like background background jobs and caching.
+I needed a way to visualize my application progress without drowning in tabs. I also wanted to learn how to build a robust full stack system that handles real world scenarios like background jobs and caching.
 
 ## Tech Stack
 
