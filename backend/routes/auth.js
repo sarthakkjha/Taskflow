@@ -15,4 +15,10 @@ router.get('/me', authenticate, authController.getMe);
 // Logout
 router.post('/logout', authController.logout);
 
+// Forgot Password
+router.post('/forgot-password', authController.forgotPassword);
+
+// Reset Password
+router.post('/reset-password', authController.resetPassword);
+
 module.exports = router;

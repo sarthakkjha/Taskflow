@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Target, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Target, Lock, Key, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -8,15 +8,15 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL;
 
-export default function Login() {
+export default function ResetPassword() {
     const navigate = useNavigate();
-    const [isLogin, setIsLogin] = useState(true);
+    const location = useLocation();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        name: ''
+        email: location.state?.email || '',
+        otp: '',
+        newPassword: ''
     });
 
     const handleSubmit = async (e) => {
@@ -24,28 +24,22 @@ export default function Login() {
         setIsLoading(true);
 
         try {
-            const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-            const body = isLogin
-                ? { email: formData.email, password: formData.password }
-                : { email: formData.email, password: formData.password, name: formData.name };
-
-            const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+            const response = await fetch(`${BACKEND_URL}/api/auth/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(body)
+                body: JSON.stringify(formData)
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
-                navigate('/dashboard', { state: { user: data }, replace: true });
+                toast.success('Password reset successfully! Please login.');
+                navigate('/login');
             } else {
-                toast.error(data.detail || 'Authentication failed');
+                toast.error(data.detail || 'Failed to reset password');
             }
         } catch (error) {
-            console.error('Auth error:', error);
+            console.error('Reset password error:', error);
             toast.error('Something went wrong. Please try again.');
         } finally {
             setIsLoading(false);
@@ -68,60 +62,41 @@ export default function Login() {
                     <div className="p-8 rounded-xl border border-white/10 bg-card/50 backdrop-blur-sm">
                         <div className="text-center mb-8">
                             <h1 className="text-2xl sm:text-3xl font-heading font-bold mb-2">
-                                {isLogin ? 'Welcome Back' : 'Create Account'}
+                                Reset Password
                             </h1>
                             <p className="text-muted-foreground text-sm">
-                                {isLogin
-                                    ? 'Sign in to continue to TaskFlow'
-                                    : 'Get started with TaskFlow today'}
+                                Enter the OTP sent to your email and your new password
                             </p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {!isLogin && (
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Full Name</Label>
-                                    <div className="relative">
-                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            placeholder="John Doe"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="pl-10"
-                                            required={!isLogin}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="otp">OTP</Label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        id="otp"
+                                        type="text"
+                                        placeholder="123456"
+                                        value={formData.otp}
+                                        onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
                                         className="pl-10"
                                         required
+                                        maxLength={6}
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="newPassword">New Password</Label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <Input
-                                        id="password"
+                                        id="newPassword"
                                         type={showPassword ? 'text' : 'password'}
                                         placeholder="••••••••"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        value={formData.newPassword}
+                                        onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
                                         className="pl-10 pr-10"
                                         required
                                         minLength={6}
@@ -134,16 +109,6 @@ export default function Login() {
                                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                     </button>
                                 </div>
-                                {isLogin && (
-                                    <div className="flex justify-end mt-1">
-                                        <Link
-                                            to="/forgot-password"
-                                            className="text-xs text-muted-foreground hover:text-taskManager transition-colors"
-                                        >
-                                            Forgot password?
-                                        </Link>
-                                    </div>
-                                )}
                             </div>
 
                             <Button
@@ -154,27 +119,19 @@ export default function Login() {
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
                                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        {isLogin ? 'Signing in...' : 'Creating account...'}
+                                        Resetting...
                                     </span>
                                 ) : (
-                                    isLogin ? 'Sign In' : 'Create Account'
+                                    'Reset Password'
                                 )}
                             </Button>
                         </form>
 
                         <div className="mt-6 text-center">
-                            <p className="text-sm text-muted-foreground">
-                                {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
-                                <button
-                                    onClick={() => {
-                                        setIsLogin(!isLogin);
-                                        setFormData({ email: '', password: '', name: '' });
-                                    }}
-                                    className="text-taskManager hover:underline font-medium"
-                                >
-                                    {isLogin ? 'Sign up' : 'Sign in'}
-                                </button>
-                            </p>
+                            <Link to="/login" className="text-sm text-taskManager hover:underline flex items-center justify-center gap-2">
+                                <ArrowLeft className="w-4 h-4" />
+                                Back to Login
+                            </Link>
                         </div>
                     </div>
                 </div>

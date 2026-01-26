@@ -130,9 +130,105 @@ const logout = async (req, res) => {
     }
 };
 
+const nodemailer = require('nodemailer');
+
+// ... existing code ...
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ detail: 'Email is required' });
+        }
+
+        const user = await req.db.collection('users').findOne({ email });
+        if (!user) {
+            return res.status(404).json({ detail: 'User not found' });
+        }
+
+        // Generate 6 digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+        // Store OTP in separate collection or user document. 
+        // Using a separate collection 'otps' is cleaner.
+        await req.db.collection('otps').insertOne({
+            email,
+            otp,
+            expiresAt: otpExpires,
+            createdAt: new Date()
+        });
+
+        // Send email
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for password reset is: ${otp}. It expires in 10 minutes.`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json({ message: 'OTP sent to your email' });
+
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ detail: 'Error sending OTP' });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ detail: 'Email, OTP, and new password are required' });
+        }
+
+        // Verify OTP
+        const validOtp = await req.db.collection('otps').findOne({
+            email,
+            otp,
+            expiresAt: { $gt: new Date() }
+        });
+
+        if (!validOtp) {
+            return res.status(400).json({ detail: 'Invalid or expired OTP' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update user password
+        await req.db.collection('users').updateOne(
+            { email },
+            { $set: { password: hashedPassword } }
+        );
+
+        // Delete used OTP (and potentially all OTPs for this email to prevent reuse)
+        await req.db.collection('otps').deleteMany({ email });
+
+        res.json({ message: 'Password reset successfully' });
+
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ detail: 'Error resetting password' });
+    }
+};
+
 module.exports = {
     register,
     login,
     getMe,
-    logout
+    logout,
+    forgotPassword,
+    resetPassword
 };
