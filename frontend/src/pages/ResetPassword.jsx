@@ -27,6 +27,7 @@ export default function ResetPassword() {
             const response = await fetch(`${BACKEND_URL}/api/auth/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify(formData)
             });
 
